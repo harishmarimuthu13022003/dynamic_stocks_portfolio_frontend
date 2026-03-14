@@ -9,7 +9,7 @@ import {
   getGroupedRowModel,
   GroupingState,
 } from '@tanstack/react-table';
-import { Stock } from '@/types';
+import { Stock } from '@/types'; 
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
@@ -68,6 +68,10 @@ export default function PortfolioTable({ data }: PortfolioTableProps) {
             {info.getValue()}
           </span>
         ),
+      }),
+      columnHelper.accessor('sector', {
+        header: 'Sector',
+        cell: (info) => <span className="text-gray-400 italic text-xs uppercase">{info.getValue()}</span>,
       }),
       columnHelper.accessor('cmp', {
         header: 'CMP',

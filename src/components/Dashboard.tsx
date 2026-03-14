@@ -6,7 +6,7 @@ import { Stock, PortfolioSummary } from '@/types';
 import DashboardHeader from './DashboardHeader';
 import PortfolioTable from './PortfolioTable';
 import { RefreshCw, PlusCircle, AlertCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils'; 
 import { useMemo } from 'react';
 import StockForm from './StockForm';
 import { Database } from 'lucide-react';
