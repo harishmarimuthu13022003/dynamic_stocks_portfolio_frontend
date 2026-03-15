@@ -33,7 +33,7 @@ export default function StockForm({ onClose, onSuccess }: StockFormProps) {
         quantity: parseInt(formData.quantity)
       };
 
-      await axios.post('http://localhost:5002/api/stocks', payload);
+      await axios.post('https://dynamic-stocks-portfolio-backend-1.onrender.com/api/stocks', payload);
       onSuccess();
       onClose();
     } catch (err: any) {

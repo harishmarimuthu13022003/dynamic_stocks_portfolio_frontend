@@ -24,26 +24,12 @@ export default function Dashboard() {
       if (!isSilent) setLoading(true);
       else setRefreshing(true);
 
-      const API_URL = 'http://localhost:5002/api/stocks';
+      const API_URL = 'https://dynamic-stocks-portfolio-backend-1.onrender.com/api/stocks';
 
-      // 1. Fetch stock list from Backend
+      // Fetch stock list from Backend (now contains cached price data)
       const { data: stockList } = await axios.get<Stock[]>(API_URL);
       
-      // 2. Fetch latest prices from Backend
-      const { data: priceData } = await axios.get(`${API_URL}/prices`);
-      
-      // 3. Map prices to stocks
-      const updatedStocks = stockList.map(stock => {
-        const live = priceData.find((p: any) => p.symbol === stock.symbol);
-        return {
-          ...stock,
-          cmp: live?.cmp || null,
-          peRatio: live?.peRatio || 'N/A',
-          latestEarnings: live?.latestEarnings || 'N/A'
-        };
-      });
-
-      setStocks(updatedStocks);
+      setStocks(stockList);
       setError(null);
     } catch (err: any) {
       console.error('Fetch error:', err);
@@ -53,11 +39,10 @@ export default function Dashboard() {
       setRefreshing(false);
     }
   }, []);
-
   const handleSeed = async () => {
     try {
       setSeeding(true);
-      await axios.post('http://localhost:5002/api/stocks/seed');
+      await axios.post('https://dynamic-stocks-portfolio-backend-1.onrender.com/api/stocks/seed');
       fetchPortfolioData();
     } catch (err) {
       setError('Failed to seed database');
@@ -67,14 +52,31 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    // Initial fetch
     fetchPortfolioData();
 
-    // Set interval for real-time updates (15 seconds)
-    const interval = setInterval(() => {
-      fetchPortfolioData(true);
-    }, 15000);
+    // Setup Server-Sent Events (SSE) for real-time background updates without network clutter
+    const eventSource = new EventSource('https://dynamic-stocks-portfolio-backend-1.onrender.com/api/stocks/stream');
 
-    return () => clearInterval(interval);
+    eventSource.onmessage = (event) => {
+      try {
+        const updatedStocks = JSON.parse(event.data);
+        if (updatedStocks && updatedStocks.length > 0) {
+          setStocks(updatedStocks);
+        }
+      } catch (err) {
+        console.error('SSE parsing error', err);
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error('SSE Error:', error);
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
   }, [fetchPortfolioData]);
 
   const summary = useMemo<PortfolioSummary>(() => {
