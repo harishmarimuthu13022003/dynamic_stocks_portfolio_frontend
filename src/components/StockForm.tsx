@@ -36,8 +36,12 @@ export default function StockForm({ onClose, onSuccess }: StockFormProps) {
       await axios.post('https://dynamic-stocks-portfolio-backend-1.onrender.com/api/stocks', payload);
       onSuccess();
       onClose();
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to add stock');
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.error || 'Failed to add stock');
+      } else {
+        setError('An unexpected error occurred');
+      }
     } finally {
       setLoading(false);
     }

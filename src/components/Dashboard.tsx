@@ -31,7 +31,7 @@ export default function Dashboard() {
       
       setStocks(stockList);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Fetch error:', err);
       setError('Failed to fetch data. Please check if your backend is running at http://localhost:5002');
     } finally {
@@ -44,7 +44,7 @@ export default function Dashboard() {
       setSeeding(true);
       await axios.post('https://dynamic-stocks-portfolio-backend-1.onrender.com/api/stocks/seed');
       fetchPortfolioData();
-    } catch (err) {
+    } catch {
       setError('Failed to seed database');
     } finally {
       setSeeding(false);
@@ -64,8 +64,8 @@ export default function Dashboard() {
         if (updatedStocks && updatedStocks.length > 0) {
           setStocks(updatedStocks);
         }
-      } catch (err) {
-        console.error('SSE parsing error', err);
+      } catch (error) {
+        console.error('SSE parsing error', error);
       }
     };
 

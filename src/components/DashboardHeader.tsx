@@ -39,7 +39,15 @@ export default function DashboardHeader({ summary }: DashboardHeaderProps) {
   );
 }
 
-function SummaryCard({ title, value, subValue, icon, valueClass }: any) {
+interface SummaryCardProps {
+  title: string;
+  value: string;
+  subValue?: string;
+  icon: React.ReactNode;
+  valueClass?: string;
+}
+
+function SummaryCard({ title, value, subValue, icon, valueClass }: SummaryCardProps) {
   return (
     <div className="glass-card p-6 animate-in">
       <div className="flex justify-between items-start mb-4">
